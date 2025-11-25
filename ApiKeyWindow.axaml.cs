@@ -9,18 +9,37 @@ public partial class ApiKeyWindow : Window
     private readonly SettingsService _settingsService;
     private readonly TornApiService _apiService;
 
+    // 👇 Parameterless ctor required for XAML loader (even if you don't use it)
+    public ApiKeyWindow()
+        : this(new SettingsService(), new TornApiService())
+    {
+    }
+
     public ApiKeyWindow(SettingsService settingsService, TornApiService apiService)
     {
         InitializeComponent();
         _settingsService = settingsService;
         _apiService = apiService;
 
-        // Pre-fill if we already have a saved key
         var settings = _settingsService.Load();
         if (!string.IsNullOrWhiteSpace(settings.ApiKey))
         {
             ApiKeyTextBox.Text = settings.ApiKey;
         }
+    }
+    private void ResetKeyButton_OnClick(object? sender, RoutedEventArgs e)
+    {
+        // Clear the saved API key
+        var settings = _settingsService.Load();
+        settings.ApiKey = null;
+        _settingsService.Save(settings);
+
+        // Open a fresh API key window using the same services
+        var apiWindow = new ApiKeyWindow(_settingsService, _apiService);
+        apiWindow.Show();
+
+        // Close current main window
+        Close();
     }
 
     private async void SaveButton_OnClick(object? sender, RoutedEventArgs e)
@@ -45,12 +64,10 @@ public partial class ApiKeyWindow : Window
             return;
         }
 
-        // Save key
         var settings = _settingsService.Load();
         settings.ApiKey = key;
         _settingsService.Save(settings);
 
-        // Open main window and close this one
         var mainWindow = new MainWindow(_settingsService, _apiService);
         mainWindow.Show();
 
