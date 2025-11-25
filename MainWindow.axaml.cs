@@ -4,8 +4,12 @@ namespace TornPropertyManager;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    private readonly SettingsService _settingsService;
+    private readonly TornApiService _apiService;
+    public MainWindow(SettingsService settingsService, TornApiService apiService)
     {
         InitializeComponent();
+         _settingsService = settingsService;
+        _apiService = apiService;
     }
 }
