@@ -2,40 +2,60 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dg="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.DataGrid"
         x:Class="TornPropertyManager.MainWindow"
-        Width="800" Height="450"
-        Title="Torn Property Manager"
-        x:CompileBindings="False">
+        Width="900" Height="550"
+        Background="#1E1E1E"
+        x:CompileBindings="False"
+        Title="Torn Property Manager">
 
-  <DockPanel Margin="10">
+  <!-- Row styling (valid in Avalonia 11) -->
+  <Window.Styles>
+    <Style Selector="DataGridRow">
+      <Setter Property="Background" Value="#1E1E1E"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="BorderBrush" Value="#333"/>
+      <Setter Property="Margin" Value="0,2"/>
+      <Setter Property="Padding" Value="5"/>
+    </Style>
+  </Window.Styles>
+
+  <DockPanel Margin="15">
 
     <!-- Header -->
-    <StackPanel DockPanel.Dock="Top"
-                Orientation="Horizontal"
-                HorizontalAlignment="Stretch"
-                Margin="0,0,0,10">
-
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,15">
       <TextBlock Text="Your Properties"
-                 FontSize="20"
-                 VerticalAlignment="Center"/>
+                 FontSize="28"
+                 VerticalAlignment="Center"
+                 Foreground="White"/>
 
-      <StackPanel Orientation="Horizontal"
-                  HorizontalAlignment="Right"
-                  Margin="10,0,0,0">
-        <Button Content="Reset API Key"
-                Command="{Binding ResetApiKeyCommand}"/>
-      </StackPanel>
-
-    </StackPanel>
+      <Button Grid.Column="1"
+              Content="Reset API Key"
+              Padding="12,6"
+              Command="{Binding ResetApiKeyCommand}"
+              Background="#03DAC6"
+              Foreground="Black"
+              BorderBrush="#03DAC6"
+              CornerRadius="6"/>
+    </Grid>
 
     <!-- Status -->
-    <TextBlock DockPanel.Dock="Bottom"
-               Text="{Binding StatusMessage}"
-               Margin="0,10,0,0"/>
+    <Border DockPanel.Dock="Bottom"
+            Background="#252525"
+            Padding="10"
+            CornerRadius="4">
+      <TextBlock Text="{Binding StatusMessage}"
+                 Foreground="#BBBBBB"
+                 FontSize="14"/>
+    </Border>
 
-    <!-- Properties Grid -->
+    <!-- Data Grid -->
     <dg:DataGrid ItemsSource="{Binding Properties}"
                  AutoGenerateColumns="False"
-                 IsReadOnly="True">
+                 HeadersVisibility="Column"
+                 GridLinesVisibility="None"
+                 Background="#1E1E1E"
+                 Foreground="White"
+                 BorderBrush="#333333"
+                 RowHeight="40">
 
       <dg:DataGrid.Columns>
 
@@ -43,23 +63,44 @@
                                Binding="{Binding PropertyId}"
                                Width="80" />
 
-        <dg:DataGridTextColumn Header="Name"
-                               Binding="{Binding Name}"
-                               Width="*" />
-
-        <dg:DataGridTextColumn Header="Type"
-                               Binding="{Binding Type}"
-                               Width="150" />
+        <dg:DataGridTextColumn Header="Property"
+                               Binding="{Binding PropertyName}"
+                               Width="170" />
 
         <dg:DataGridTextColumn Header="Status"
                                Binding="{Binding Status}"
+                               Width="140" />
+
+        <dg:DataGridTextColumn Header="Happy"
+                               Binding="{Binding Happy}"
+                               Width="80" />
+
+        <dg:DataGridTextColumn Header="Upkeep"
+                               Binding="{Binding Upkeep}"
+                               Width="120" />
+
+        <dg:DataGridTextColumn Header="Staff Cost"
+                               Binding="{Binding StaffCost}"
+                               Width="120" />
+
+        <dg:DataGridTextColumn Header="Market Price"
+                               Binding="{Binding MarketPrice}"
                                Width="150" />
 
-        <dg:DataGridCheckBoxColumn Header="Rented"
-                                   Binding="{Binding IsRented}"
+        <dg:DataGridCheckBoxColumn Header="Rented?"
+                                   Binding="{Binding IsRentedOut}"
                                    Width="80" />
 
+        <dg:DataGridTextColumn Header="Rented To"
+                               Binding="{Binding RentedToUserId}"
+                               Width="100" />
+
+        <dg:DataGridTextColumn Header="Days Left"
+                               Binding="{Binding DaysLeft}"
+                               Width="100" />
+
       </dg:DataGrid.Columns>
+
     </dg:DataGrid>
 
   </DockPanel>

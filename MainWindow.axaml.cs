@@ -22,60 +22,46 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public string StatusMessage
     {
         get => _statusMessage;
-        set
-        {
-            if (_statusMessage != value)
-            {
-                _statusMessage = value;
-                OnPropertyChanged();
-            }
-        }
+        set { _statusMessage = value; OnPropertyChanged(); }
     }
 
-    // Parameterless constructor required by Avalonia XAML loader
+    // Required for Avalonia XAML loader
     public MainWindow()
         : this(new SettingsService(), new TornApiService())
     {
     }
 
     public MainWindow(SettingsService settingsService, TornApiService apiService)
-{
-    InitializeComponent();
-    _settingsService = settingsService;
-    _apiService = apiService;
+    {
+        InitializeComponent();
+        _settingsService = settingsService;
+        _apiService = apiService;
 
-    // Create the command BEFORE setting DataContext
-    ResetApiKeyCommand = new RelayCommand(ResetApiKey);
+        ResetApiKeyCommand = new RelayCommand(ResetApiKey);
 
-    DataContext = this;
+        DataContext = this;
 
-    this.Opened += async (_, _) => await LoadPropertiesAsync();
-}
+        this.Opened += async (_, _) => await LoadPropertiesAsync();
+    }
 
     private async Task LoadPropertiesAsync()
     {
-        StatusMessage = "Loading properties from Torn API...";
+        StatusMessage = "Loading properties...";
 
         var settings = _settingsService.Load();
         var apiKey = settings.ApiKey;
-
         if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            StatusMessage = "No API key saved. Please restart and enter one.";
-            return;
-        }
-
+{
+    StatusMessage = "No API key saved.";
+    return;
+}
         var props = await _apiService.GetPropertiesAsync(apiKey);
 
         Properties.Clear();
         foreach (var p in props)
-        {
             Properties.Add(p);
-        }
 
-        StatusMessage = props.Count == 0
-            ? "No properties found or key lacks 'user → properties' access."
-            : $"Loaded {props.Count} properties.";
+        StatusMessage = $"Loaded {props.Count} properties.";
     }
 
     private void ResetApiKey()
@@ -91,7 +77,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
     public new event PropertyChangedEventHandler? PropertyChanged;
-
-    private void OnPropertyChanged([CallerMemberName] string? name = null)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    private void OnPropertyChanged([CallerMemberName] string? n = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
 }
