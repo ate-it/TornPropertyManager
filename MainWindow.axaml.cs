@@ -22,10 +22,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public string StatusMessage
     {
         get => _statusMessage;
-        set { _statusMessage = value; OnPropertyChanged(); }
+        set
+        {
+            if (_statusMessage != value)
+            {
+                _statusMessage = value;
+                OnPropertyChanged();
+            }
+        }
     }
 
-    // Required for Avalonia XAML loader
+    // Required by Avalonia XAML
     public MainWindow()
         : this(new SettingsService(), new TornApiService())
     {
@@ -46,20 +53,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private async Task LoadPropertiesAsync()
     {
-        StatusMessage = "Loading properties...";
+        StatusMessage = "Loading properties from Torn API...";
 
         var settings = _settingsService.Load();
         var apiKey = settings.ApiKey;
+
         if (string.IsNullOrWhiteSpace(apiKey))
-{
-    StatusMessage = "No API key saved.";
-    return;
-}
+        {
+            StatusMessage = "No API key saved.";
+            return;
+        }
+
         var props = await _apiService.GetPropertiesAsync(apiKey);
 
         Properties.Clear();
         foreach (var p in props)
+        {
             Properties.Add(p);
+        }
 
         StatusMessage = $"Loaded {props.Count} properties.";
     }
@@ -77,6 +88,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     }
 
     public new event PropertyChangedEventHandler? PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string? n = null)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
+
+    private void OnPropertyChanged([CallerMemberName] string? name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }
