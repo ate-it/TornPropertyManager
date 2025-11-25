@@ -3,7 +3,7 @@ name: Build & Release (multi-platform)
 on:
   push:
     branches:
-      - main   # run on every commit to main
+      - main
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'   # or whatever you target
+          dotnet-version: '8.0.x'
 
       - name: Restore
         run: dotnet restore
@@ -57,8 +57,9 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: release-zips
+          pattern: release-zips-*
           path: release
+          merge-multiple: true
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
