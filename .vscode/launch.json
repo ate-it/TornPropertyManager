@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "PHP: Built-in Server (index.php)",
+        "type": "php",
+        "request": "launch",
+        "runtimeExecutable": "/usr/bin/php",
+        "runtimeArgs": [
+          "-S",
+          "127.0.0.1:8080",
+          "-t",
+          "public"
+        ],
+        "program": "",
+        "cwd": "${workspaceFolder}",
+        "port": 9003,
+        "pathMappings": {
+          "/": "${workspaceFolder}"
+        },
+        "serverReadyAction": {
+          "pattern": "Development Server \\(http://127.0.0.1:8080\\) started",
+          "uriFormat": "http://127.0.0.1:8080/index.php",
+          "action": "openExternally"
+        }
+      }
+    ]
+  }
+  
