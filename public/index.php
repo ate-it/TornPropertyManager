@@ -317,18 +317,12 @@ function getStatusLabel($status) {
                             <span class="info-label">Happy</span>
                             <span class="info-value"><?= number_format($property['happy'] ?? 0) ?></span>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Market Price</span>
-                            <span class="info-value"><?= formatCurrency($property['market_price'] ?? 0) ?></span>
-                        </div>
+                        
                         <div class="info-item">
                             <span class="info-label">Property Upkeep</span>
                             <span class="info-value"><?= formatCurrency($property['upkeep']['property'] ?? 0) ?></span>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Staff Upkeep</span>
-                            <span class="info-value"><?= formatCurrency($property['upkeep']['staff'] ?? 0) ?></span>
-                        </div>
+                       
                     </div>
                     
                     <?php if (!empty($property['modifications'])): ?>
@@ -350,7 +344,7 @@ function getStatusLabel($status) {
                     <?php endif; ?>
                     
                     <?php if (!empty($property['used_by'])): ?>
-                        <div class="section-title">Currently Used By</div>
+                        <div class="section-title">Currently Rented By</div>
                         <div class="used-by">
                             <?php foreach ($property['used_by'] as $user): ?>
                                 <span class="user-badge"><?= htmlspecialchars($user['name']) ?></span>
@@ -408,18 +402,12 @@ function getStatusLabel($status) {
                                 <span class="info-label">Happy</span>
                                 <span class="info-value"><?= number_format($property['happy'] ?? 0) ?></span>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">Market Price</span>
-                                <span class="info-value"><?= formatCurrency($property['market_price'] ?? 0) ?></span>
-                            </div>
+                         
                             <div class="info-item">
                                 <span class="info-label">Property Upkeep</span>
                                 <span class="info-value"><?= formatCurrency($property['upkeep']['property'] ?? 0) ?></span>
                             </div>
-                            <div class="info-item">
-                                <span class="info-label">Staff Upkeep</span>
-                                <span class="info-value"><?= formatCurrency($property['upkeep']['staff'] ?? 0) ?></span>
-                            </div>
+                       
                         </div>
                         
                         <?php if (!empty($property['modifications'])): ?>
@@ -441,7 +429,7 @@ function getStatusLabel($status) {
                         <?php endif; ?>
                         
                         <?php if (!empty($property['used_by'])): ?>
-                            <div class="section-title">Currently Used By</div>
+                            <div class="section-title">Currently Rented By</div>
                             <div class="used-by">
                                 <?php foreach ($property['used_by'] as $user): ?>
                                     <span class="user-badge"><?= htmlspecialchars($user['name']) ?></span>
