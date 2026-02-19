@@ -293,7 +293,19 @@ body{
 .market-comps .market-sample{
     background:#667eea;color:#fff;padding:6px 10px;border-radius:14px;font-size:.85em;white-space:nowrap
 }
+
+/* Pricing table */
+.pricing-table{background:#fff;border-radius:10px;padding:12px;border:1px solid #eee;margin-top:15px}
+.pricing-table table{width:100%;border-collapse:collapse}
+.pricing-table th,.pricing-table td{padding:8px 10px;text-align:left;border-bottom:1px solid #f1f1f1}
+.pricing-table th{font-size:.85em;color:#666;text-transform:uppercase}
+.pricing-cta{margin-top:8px;display:flex;gap:8px}
+.pricing-btn{background:#667eea;color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:700}
 </style>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="shortcut icon" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/favicon.svg">
+<meta name="theme-color" content="#667eea">
 </head>
 <body>
 <div class="container">
@@ -317,7 +329,15 @@ body{
                 ?>
                 <div class="property-card">
                     <div class="property-header">
-                        <div class="property-id">ID: <?= htmlspecialchars((string)($property['id'] ?? 'N/A')) ?></div>
+                        <?php $pid = $property['id'] ?? null; ?>
+                        <div class="property-id">
+                            ID:
+                            <?php if (!empty($pid) && is_numeric($pid)): ?>
+                                <a href="https://www.torn.com/properties.php#/p=propertyinfo&profile=1&ID=<?= (int)$pid ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars((string)$pid) ?></a>
+                            <?php else: ?>
+                                <?= htmlspecialchars((string)($property['id'] ?? 'N/A')) ?>
+                            <?php endif; ?>
+                        </div>
                         <span class="status-badge <?= getStatusClass((string)($property['status'] ?? 'unknown')) ?>">
                             <?= getStatusLabel((string)($property['status'] ?? 'unknown')) ?>
                         </span>
@@ -344,6 +364,64 @@ body{
                     <?php endif; ?>
 
                     <?php if (!empty($comps['count'])): ?>
+                        <?php
+                            // Blend pricing base from market: 70% median + 30% p25 (fallbacks handled)
+                            $median = (int)($comps['median'] ?? 0);
+                            $p25 = (int)($comps['p25'] ?? 0);
+                            if ($median === 0 && $p25 === 0) {
+                                $rate = 0;
+                            } elseif ($median === 0) {
+                                $rate = $p25;
+                            } elseif ($p25 === 0) {
+                                $rate = $median;
+                            } else {
+                                $rate = (int)round(0.7 * $median + 0.3 * $p25);
+                            }
+                        ?>
+                        <div class="pricing-table">
+                            <div class="market-title">💰 Rent Prices</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Duration</th>
+                                        <th>Per day</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ([7,14,30,100] as $d):
+                                        // Sliding discount: 5% at 7 days → 10% at 100 days
+                                        $minDay = 7;
+                                        $maxDay = 100;
+                                        $startDiscount = 0.03;
+                                        $endDiscount = 0.05;
+                                        $t = ($d - $minDay) / ($maxDay - $minDay);
+                                        if ($t < 0) $t = 0;
+                                        if ($t > 1) $t = 1;
+                                        $discount = $startDiscount + $t * ($endDiscount - $startDiscount);
+
+                                        if ($rate > 0) {
+                                            $per = (int)round($rate * (1 - $discount));
+                                            $total = $per * $d;
+                                        } else {
+                                            $per = 0;
+                                            $total = 0;
+                                        }
+                                    ?>
+                                        <tr>
+                                            <td><?= $d ?> days</td>
+                                            <td><?= $per > 0 ? formatCurrency($per) : '—' ?></td>
+                                            <td><?= $per > 0 ? formatCurrency($total) : '—' ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <div class="pricing-cta">
+                                <a class="pricing-btn" href="https://www.torn.com/messages.php#/p=compose&XID=47662" target="_blank" rel="noopener noreferrer">Contact to Rent</a>
+                                <span style="color:#666;align-self:center;font-size:.9em">Prices derived from market median</span>
+                            </div>
+                        </div>
+
                         <div class="market-comps">
                             <div class="market-title">📊 Market comps (similar PI rentals)</div>
 
@@ -386,7 +464,15 @@ body{
             <?php foreach ($rentedProperties as $property): ?>
                 <div class="property-card">
                     <div class="property-header">
-                        <div class="property-id">ID: <?= htmlspecialchars((string)($property['id'] ?? 'N/A')) ?></div>
+                        <?php $pid = $property['id'] ?? null; ?>
+                        <div class="property-id">
+                            ID:
+                            <?php if (!empty($pid) && is_numeric($pid)): ?>
+                                <a href="https://www.torn.com/properties.php#/p=propertyinfo&profile=1&ID=<?= (int)$pid ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars((string)$pid) ?></a>
+                            <?php else: ?>
+                                <?= htmlspecialchars((string)($property['id'] ?? 'N/A')) ?>
+                            <?php endif; ?>
+                        </div>
                         <span class="status-badge <?= getStatusClass((string)($property['status'] ?? 'unknown')) ?>">
                             <?= getStatusLabel((string)($property['status'] ?? 'unknown')) ?>
                         </span>
