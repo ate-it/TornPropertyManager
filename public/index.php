@@ -31,6 +31,22 @@ $api = new TornApi($key);
 $userData = $api->get('/user/', ['selections' => 'properties']);
 $allProperties = $userData['properties'] ?? [];
 
+// Debug mode: dump raw property data to inspect statuses
+if (isset($_GET['debug'])) {
+    header('Content-Type: application/json');
+    $debug = [];
+    foreach ($allProperties as $prop) {
+        $debug[] = [
+            'id'          => $prop['id'] ?? null,
+            'property_id' => $prop['property']['id'] ?? null,
+            'status'      => $prop['status'] ?? null,
+            'happy'       => $prop['happy'] ?? null,
+        ];
+    }
+    echo json_encode($debug, JSON_PRETTY_PRINT);
+    exit;
+}
+
 $privateIslands = [];
 foreach ($allProperties as $property) {
     if ((int)($property['property']['id'] ?? 0) === 13 && ($property['status'] ?? '') !== 'in_use') {
@@ -166,7 +182,7 @@ function formatCurrency($amount): string {
 
 function getStatusClass(string $status): string {
     return match($status) {
-        'none'   => 'status-available',
+        'none', 'for_rent' => 'status-available',
         'in_use' => 'status-occupied',
         'rented' => 'status-rented',
         default  => 'status-unknown',
@@ -175,8 +191,9 @@ function getStatusClass(string $status): string {
 
 function getStatusLabel(string $status): string {
     return match($status) {
-        'none'   => 'Available to Rent',
-        'in_use' => 'In Use',
+        'none'     => 'Available to Rent',
+        'for_rent' => 'Listed for Rent',
+        'in_use'   => 'In Use',
         'rented' => 'Rented',
         default  => ucfirst($status),
     };
@@ -185,7 +202,7 @@ function getStatusLabel(string $status): string {
 /* --------------------
    SPLIT INTO SECTIONS
 -------------------- */
-$availableProperties = array_values(array_filter($privateIslands, fn($p) => ($p['status'] ?? '') === 'none'));
+$availableProperties = array_values(array_filter($privateIslands, fn($p) => in_array($p['status'] ?? '', ['none', 'for_rent'], true)));
 $rentedProperties    = array_values(array_filter($privateIslands, fn($p) => ($p['status'] ?? '') === 'rented'));
 ?>
 <!DOCTYPE html>
