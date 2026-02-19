@@ -276,9 +276,24 @@ body{
     border-radius:10px;
     margin-top:15px;
 }
-.market-comps .market-title{
-    font-weight:700;color:#333;margin-bottom:10px
+.market-comps summary.market-title{
+    font-weight:700;color:#333;
+    cursor:pointer;
+    list-style:none;
+    display:flex;justify-content:space-between;align-items:center;
+    user-select:none;
 }
+.market-comps summary.market-title::after{
+    content:'▸';
+    font-size:.9em;color:#999;transition:transform .2s;
+}
+.market-comps details[open] summary.market-title::after{
+    transform:rotate(90deg);
+}
+.market-comps details[open] summary.market-title{
+    margin-bottom:10px;
+}
+.market-comps summary.market-title::-webkit-details-marker{display:none}
 .market-comps .market-metrics{
     display:grid;
     grid-template-columns:repeat(3,1fr);
@@ -426,30 +441,32 @@ body{
                         </div>
 
                         <div class="market-comps">
-                            <div class="market-title">📊 Market comps (similar PI rentals)</div>
+                            <details>
+                                <summary class="market-title">📊 Market comps (similar PI rentals)</summary>
 
-                            <div class="market-metrics">
-                                <div class="market-metric">
-                                    <div class="label">Median / day</div>
-                                    <div class="value"><?= formatCurrency((int)$comps['median']) ?></div>
+                                <div class="market-metrics">
+                                    <div class="market-metric">
+                                        <div class="label">Median / day</div>
+                                        <div class="value"><?= formatCurrency((int)$comps['median']) ?></div>
+                                    </div>
+                                    <div class="market-metric">
+                                        <div class="label">P25–P75 / day</div>
+                                        <div class="value"><?= formatCurrency((int)$comps['p25']) ?> – <?= formatCurrency((int)$comps['p75']) ?></div>
+                                    </div>
+                                    <div class="market-metric">
+                                        <div class="label">Listings</div>
+                                        <div class="value"><?= (int)$comps['count'] ?></div>
+                                    </div>
                                 </div>
-                                <div class="market-metric">
-                                    <div class="label">P25–P75 / day</div>
-                                    <div class="value"><?= formatCurrency((int)$comps['p25']) ?> – <?= formatCurrency((int)$comps['p75']) ?></div>
-                                </div>
-                                <div class="market-metric">
-                                    <div class="label">Listings</div>
-                                    <div class="value"><?= (int)$comps['count'] ?></div>
-                                </div>
-                            </div>
 
-                            <div class="market-samples">
-                                <?php foreach ($comps['samples'] as $s): ?>
-                                    <span class="market-sample">
-                                        <?= number_format((int)$s['happy']) ?> happy • <?= formatCurrency((int)$s['per_day']) ?>/d • <?= (int)$s['days'] ?>d
-                                    </span>
-                                <?php endforeach; ?>
-                            </div>
+                                <div class="market-samples">
+                                    <?php foreach ($comps['samples'] as $s): ?>
+                                        <span class="market-sample">
+                                            <?= number_format((int)$s['happy']) ?> happy • <?= formatCurrency((int)$s['per_day']) ?>/d • <?= (int)$s['days'] ?>d
+                                        </span>
+                                    <?php endforeach; ?>
+                                </div>
+                            </details>
                         </div>
                     <?php endif; ?>
                 </div>
