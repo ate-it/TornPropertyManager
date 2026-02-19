@@ -1,8 +1,10 @@
 FROM php:8.2-apache
 
-# Enable curl PHP extension and Apache mod_rewrite
-RUN docker-php-ext-install curl \
- && a2enmod rewrite
+# Install libcurl dev headers, then enable curl PHP extension and Apache mod_rewrite
+RUN apt-get update && apt-get install -y libcurl4-openssl-dev \
+ && docker-php-ext-install curl \
+ && a2enmod rewrite \
+ && rm -rf /var/lib/apt/lists/*
 
 # Point document root at /var/www/html/public
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
