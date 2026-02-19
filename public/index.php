@@ -6,18 +6,21 @@ require_once __DIR__ . '/../src/TornApi.php';
 /* --------------------
    ENV + API SETUP
 -------------------- */
-$envPath = __DIR__ . '/../.env';
-if (!file_exists($envPath)) {
-    http_response_code(500);
-    exit('Missing .env');
-}
+// Try environment variable first (Render, Docker, etc.)
+$key = (string)(getenv('TORN_API_KEY') ?: '');
 
-$env = parse_ini_file($envPath, false, INI_SCANNER_RAW);
-$key = $env['TORN_API_KEY'] ?? '';
+// Fall back to .env file for local development
+if ($key === '' || $key === 'put-your-key-here') {
+    $envPath = __DIR__ . '/../.env';
+    if (file_exists($envPath)) {
+        $env = parse_ini_file($envPath, false, INI_SCANNER_RAW);
+        $key = (string)($env['TORN_API_KEY'] ?? '');
+    }
+}
 
 if ($key === '' || $key === 'put-your-key-here') {
     http_response_code(500);
-    exit('Set TORN_API_KEY in .env');
+    exit('Set TORN_API_KEY environment variable');
 }
 
 $api = new TornApi($key);
