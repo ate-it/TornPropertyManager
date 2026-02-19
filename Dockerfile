@@ -26,4 +26,8 @@ COPY . /var/www/html/
 RUN mkdir -p /var/www/html/cache \
  && chown -R www-data:www-data /var/www/html/cache
 
-EXPOSE 80
+# Entrypoint patches Apache to listen on $PORT (Render default: 10000)
+RUN chmod +x /var/www/html/entrypoint.sh
+
+EXPOSE 10000
+CMD ["/var/www/html/entrypoint.sh"]
